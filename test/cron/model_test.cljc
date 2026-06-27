@@ -1,0 +1,52 @@
+(ns cron.model-test
+  (:require [cron.model :as m]
+            #?(:clj  [clojure.test :refer [deftest is testing]]
+               :cljs [cljs.test    :refer-macros [deftest is testing]])))
+
+(deftest parse-wildcard-step
+  (testing "*/15 on minute field expands to {0 15 30 45}"
+    (let [c (m/parse "*/15 * * * *")]
+      (is (= #{0 15 30 45} (:cron/minute c)))
+      (is (= (into #{} (range 0 24)) (:cron/hour c)))
+      (is (false? (:cron/dom-restricted? c)))
+      (is (false? (:cron/dow-restricted? c))))))
+
+(deftest parse-range
+  (testing "range 1-5 on minute"
+    (let [c (m/parse "1-5 * * * *")]
+      (is (= #{1 2 3 4 5} (:cron/minute c)))))
+  (testing "range with step MON-FRI on dow"
+    (let [c (m/parse "0 0 * * MON-FRI")]
+      (is (= #{1 2 3 4 5} (:cron/dow c)))
+      (is (true? (:cron/dow-restricted? c))))))
+
+(deftest parse-list
+  (testing "comma list on minute"
+    (let [c (m/parse "0,30 * * * *")]
+      (is (= #{0 30} (:cron/minute c)))))
+  (testing "named month JAN"
+    (let [c (m/parse "0 0 1 JAN *")]
+      (is (= #{1} (:cron/month c)))
+      (is (true? (:cron/dom-restricted? c))))))
+
+(deftest parse-macro-daily
+  (testing "@daily expands correctly"
+    (let [c (m/parse "@daily")]
+      (is (= #{0} (:cron/minute c)))
+      (is (= #{0} (:cron/hour c)))
+      (is (= (into #{} (range 1 32)) (:cron/dom c)))
+      (is (= (into #{} (range 1 13)) (:cron/month c)))
+      (is (= (into #{} (range 0 7))  (:cron/dow c)))
+      (is (false? (:cron/dom-restricted? c)))
+      (is (false? (:cron/dow-restricted? c))))))
+
+(deftest parse-macro-hourly
+  (testing "@hourly fires every hour at minute 0"
+    (let [c (m/parse "@hourly")]
+      (is (= #{0} (:cron/minute c)))
+      (is (= (into #{} (range 0 24)) (:cron/hour c))))))
+
+(deftest parse-range-step
+  (testing "range with step: 0-30/10 → {0 10 20 30}"
+    (let [c (m/parse "0-30/10 * * * *")]
+      (is (= #{0 10 20 30} (:cron/minute c))))))
