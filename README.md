@@ -1,5 +1,7 @@
 # cron-clj (定期スケジュール式)
 
+[![CI](https://github.com/kotoba-lang/cron/actions/workflows/ci.yml/badge.svg)](https://github.com/kotoba-lang/cron/actions/workflows/ci.yml)
+
 Handle **cron expressions as EDN/Clojure data** in portable Clojure — every namespace
 is `.cljc`, with **zero third-party runtime deps**, so it runs on the JVM,
 ClojureScript, and Clojure-on-WASM hosts (SCI). A cron expression is a plain map you
