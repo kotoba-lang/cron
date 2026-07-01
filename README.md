@@ -1,4 +1,4 @@
-# cron-clj (定期スケジュール式)
+# kotoba-lang/cron
 
 [![CI](https://github.com/kotoba-lang/cron/actions/workflows/ci.yml/badge.svg)](https://github.com/kotoba-lang/cron/actions/workflows/ci.yml)
 
@@ -9,16 +9,14 @@ can inspect, store, diff, or feed to a loop/scheduler; the library adds the fiel
 parser, structural validator, and a pure next-fire-time evaluator around it. Pairs
 naturally with scheduling and loop actors that need to know "when does this fire next?"
 
-Sibling of the other reusable `*-clj` kernels in this org
-([bpmn-clj](https://github.com/com-junkawasaki/bpmn-clj),
-[dmn-clj](https://github.com/com-junkawasaki/dmn-clj)).
+Sibling of other reusable kotoba-lang contract kernels such as
+[`kotoba-lang/bpmn`](https://github.com/kotoba-lang/bpmn) and
+[`kotoba-lang/dmn`](https://github.com/kotoba-lang/dmn).
 
-## Why a shared library (org placement)
+## Why a shared library
 
-Per the three-org rule, the **reusable** scheduling primitive lives in
-**com-junkawasaki**; **public-benefit actor instances** that schedule concrete jobs live
-in **etzhayyim**; any **business/private deployment** lives in **gftdcojp**. cron-clj
-is the dep — it carries no scheduler runtime and no I/O (those are host-injected).
+The reusable scheduling primitive lives in `kotoba-lang/cron`. It carries no
+scheduler runtime and no I/O; those remain host-injected ports.
 
 ## The model: cron as EDN (`cron.model`)
 
@@ -108,5 +106,5 @@ firing is found within that window (e.g. an impossible expression like `"0 0 31 
 ## Test
 
 ```
-clojure -X:test
+clojure -M:test
 ```
