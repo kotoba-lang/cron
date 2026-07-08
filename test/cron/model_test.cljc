@@ -20,6 +20,17 @@
       (is (= #{1 2 3 4 5} (:cron/dow c)))
       (is (true? (:cron/dow-restricted? c))))))
 
+(deftest parse-rejects-reversed-range
+  (testing "a reversed range (start > end, e.g. a transposed-bounds typo)
+            throws instead of silently expanding to an empty field-set
+            (Clojure's range silently returns empty for start > end)"
+    (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+                 (m/parse "50-10 * * * *")))
+    (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+                 (m/parse "0-30/10 * * * FRI-MON"))))
+  (testing "start == end is a valid single-element range, not rejected"
+    (is (= #{5} (:cron/minute (m/parse "5-5 * * * *"))))))
+
 (deftest parse-list
   (testing "comma list on minute"
     (let [c (m/parse "0,30 * * * *")]
