@@ -79,6 +79,12 @@
           step  (if step-part (parse-int step-part) 1)]
       (when (<= step 0)
         (throw (ex-info "Step must be > 0" {:token token})))
+      ;; `range` silently returns empty for start > end -- a reversed range
+      ;; (a common transposed-bounds typo, e.g. "50-10") would otherwise
+      ;; parse to an empty field-set instead of throwing, then silently
+      ;; "never fire" downstream rather than surfacing the bad input.
+      (when (> start end)
+        (throw (ex-info "Range start must be <= end" {:token token})))
       (expand-range start end step))
 
     ;; a,b,c  — recurse on each sub-token
