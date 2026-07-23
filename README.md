@@ -103,6 +103,18 @@ when **either** condition is satisfied:
 `next-fire` is bounded to ~3 years (~1,576,980 minute steps) and returns `nil` if no
 firing is found within that window (e.g. an impossible expression like `"0 0 31 2 *"`).
 
+## Kotoba bounded profile
+
+`src/cron/bounded_civil.kotoba` is a capability-free Kotoba port of the
+proleptic-Gregorian calendar arithmetic underlying `weekday`/`fires-at?`/
+`next-fire` (`days-from-civil`/`civil-from-days`/`weekday`) — it has no
+dependency on cron expression parsing at all. `cron.model/parse` (regex,
+field sets up to 60 members) and everything downstream of it
+(`fires-at?`/`next-fire`/`cron.validate`) stay in CLJC as the general
+oracle; see [migration/bounded-civil-v1.edn](migration/bounded-civil-v1.edn)
+for the full record, including a compiler codegen bug found and worked
+around while implementing it.
+
 ## Test
 
 ```
