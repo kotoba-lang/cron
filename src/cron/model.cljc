@@ -14,7 +14,8 @@
 
   Supported field syntax: *, n, a-b, a-b/s, */s, a,b,c (mixable).
   3-letter names: JAN-DEC (month), SUN-SAT (dow) — case-insensitive.
-  Macro shorthands: @yearly/@annually/@monthly/@weekly/@daily/@hourly.")
+  Macro shorthands: @yearly/@annually/@monthly/@weekly/@daily/@hourly."
+  (:require [kotoba.lang.text]))
 
 ;; --- name tables ---
 
@@ -47,7 +48,7 @@
   [s name-table]
   (if (re-matches #"[0-9]+" s)
     (parse-int s)
-    (let [upper (clojure.string/upper-case s)]
+    (let [upper (kotoba.lang.text/upper s)]
       (or (get name-table upper)
           (throw (ex-info (str "Unknown name: " s) {:token s}))))))
 
@@ -64,16 +65,16 @@
     (expand-range lo hi 1)
 
     ;; */step
-    (clojure.string/starts-with? token "*/")
+    (kotoba.lang.text/starts-with? token "*/")
     (let [step (parse-int (subs token 2))]
       (when (<= step 0)
         (throw (ex-info "Step must be > 0" {:token token})))
       (expand-range lo hi step))
 
     ;; a-b  or  a-b/step
-    (clojure.string/includes? token "-")
-    (let [[range-part step-part] (clojure.string/split token #"/" 2)
-          [a-tok b-tok]          (clojure.string/split range-part #"-" 2)
+    (kotoba.lang.text/includes? token "-")
+    (let [[range-part step-part] (kotoba.lang.text/split token #"/" 2)
+          [a-tok b-tok]          (kotoba.lang.text/split range-part #"-" 2)
           start (parse-num a-tok name-table)
           end   (parse-num b-tok name-table)
           step  (if step-part (parse-int step-part) 1)]
@@ -88,9 +89,9 @@
       (expand-range start end step))
 
     ;; a,b,c  — recurse on each sub-token
-    (clojure.string/includes? token ",")
+    (kotoba.lang.text/includes? token ",")
     (into #{} (mapcat #(parse-token % lo hi name-table)
-                      (clojure.string/split token #",")))
+                      (kotoba.lang.text/split token #",")))
 
     ;; single value: integer or name
     :else
@@ -104,9 +105,9 @@
 
   Throws ex-info on parse failure (unknown name, bad step, wrong field count)."
   [expr]
-  (let [expr     (clojure.string/trim expr)
+  (let [expr     (kotoba.lang.text/trim expr)
         expr     (get macros expr expr)
-        parts    (clojure.string/split expr #"\s+")]
+        parts    (kotoba.lang.text/split expr #"\s+")]
     (when (not= 5 (count parts))
       (throw (ex-info (str "Cron expression must have exactly 5 fields; got: " expr)
                       {:expr expr :fields (count parts)})))
