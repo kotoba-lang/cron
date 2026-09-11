@@ -118,5 +118,5 @@ around while implementing it.
 ## Test
 
 ```
-clojure -M:test
+kbb -M:test
 ```
