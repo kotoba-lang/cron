@@ -1,7 +1,7 @@
 {:schema "kotoba-cron-migration/v1"
  :profile :cron/bounded-civil-v1
- :legacy {:calendar-source "src/cron/execute.cljc"
-          :parse-and-validate "src/cron/model.cljc, src/cron/validate.cljc"
+ :legacy {:calendar-source "src/cron/execute.cljk"
+          :parse-and-validate "src/cron/model.cljk, src/cron/validate.cljk"
           :status :retained-general-oracle}
  :canonical {:engine-and-conformance "src/cron/bounded_civil.kotoba"}
  :domain
